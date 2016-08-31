@@ -1,0 +1,27 @@
+defmodule Stockfighter do
+  use Application
+  use Supervisor
+
+  # Application entry point
+  def start(_tyle, _args) do
+    Stockfighter.start_link([])
+  end
+
+  def start_link(args \\ []) do
+    Supervisor.start_link(__MODULE__, args)
+  end
+
+
+  # Host supervisor init
+  def init(_) do
+
+    subordinates = [
+      # Define subordinates in startup order, eg:
+      #   worker(Stockfighter.Worker, [arg1, ..., argN]),
+      #   supervisor(Stockfighter.Sup, [arg1, ..., argN])
+      supervisor(Stockfighter.Relay.Boss, [])]
+
+    # Launch subordinate programs and get goin'!
+    supervise subordinates, strategy: :simple_one_for_one
+  end
+end
