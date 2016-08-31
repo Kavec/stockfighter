@@ -1,3 +1,0 @@
-ExCheck.start
-
-ExUnit.start
