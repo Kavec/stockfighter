@@ -14,12 +14,13 @@ defmodule Stockfighter.Mixfile do
   # OTP Application Config
   def application do
     [mod:          {Stockfighter, []},
-     applications: [:logger, :phoenix]]
+     applications: [:logger]]
   end
 
   # Dependencies
   defp deps do
-    [{:excheck, "~> 0.5",              only: :test},
+    [{:tube,    "~> 0.1.0"},
+     {:excheck, "~> 0.5",              only: :test},
      {:triq,    github: "triqng/triq", only: :test}]
   end
 end
