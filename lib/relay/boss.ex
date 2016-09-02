@@ -8,8 +8,11 @@ defmodule Stockfighter.Relay.Boss do
   end
 
   def init(_) do
-    subordinates = []
+    subordinates = [
+      worker(Stockfighter.Relay.Websocket, [[
+        host: "api.stockfighter.io",
+        path: "/ob/api/ws/SAK5403822/venues/IQSBEX/tickertape"]])]
 
-    supervise subordinates, stategy: :simple_one_for_one
+    supervise subordinates, strategy: :one_for_one
   end
 end
