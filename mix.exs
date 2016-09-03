@@ -20,8 +20,8 @@ defmodule Stockfighter.Mixfile do
   # Dependencies
   defp deps do
     [{:gen_stage, "~> 0.4"},
-     {:gun,     "~> 1.0.0-pre.1"},
-     {:excheck, "~> 0.5",              only: :test},
-     {:triq,    github: "triqng/triq", only: :test}]
+     {:gun,       "~> 1.0.0-pre.1"},
+     {:excheck,   "~> 0.5",              only: :test},
+     {:triq,      github: "triqng/triq", only: :test}]
   end
 end
