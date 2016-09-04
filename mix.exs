@@ -19,7 +19,8 @@ defmodule Stockfighter.Mixfile do
 
   # Dependencies
   defp deps do
-    [{:httpoison, "~> 0.9.0"},
+    [{:poison,    "~> 2.0"},
+     {:httpoison, "~> 0.9.0"},
      {:gen_stage, "~> 0.4"},
      {:gun,       "~> 1.0.0-pre.1"},
      {:excheck,   "~> 0.5",              only: :test},
