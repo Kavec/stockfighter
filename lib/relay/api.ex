@@ -3,6 +3,11 @@ defmodule Stockfighter.Relay.API do
   use HTTPoison.Base
   alias HTTPoison.{Response, Error}
 
+  @doc "Formats path for orders"
+  def order(venue, stock) do
+    "/ob/api/venues/#{venue}/stocks/#{stock}/orders"
+  end
+
   @doc "Formats path for ws execution calls"
   def ws_execs(account, venue) do
     "/ob/api/ws/#{account}/venues/#{venue}/executions"
