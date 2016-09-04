@@ -11,15 +11,15 @@ defmodule Stockfighter.Relay.Venue do
   end
 
   def init([account, venue]) do
-    alias Stockfighter.Relay.Websocket
+    alias Stockfighter.Relay.API
 
     execs = 
-      Websocket.fmt_execs(account, venue)
-      |> Websocket.connect(self)
+      API.ws_execs(account, venue)
+      |> API.ws_connect(self, &GenStage.cast/2)
 
     ttape = 
-      Websocket.fmt_ttape(account, venue)
-      |> Websocket.connect(self)
+      API.ws_ttape(account, venue)
+      |> API.ws_connect(self, &GenStage.cast/2)
 
     state = %{
       account: account,
@@ -78,9 +78,9 @@ defmodule Stockfighter.Relay.Venue do
   # NB. that terminate is only called in optimal circumstances
   @doc false
   def terminate(_reason, state) do
-    alias Stockfighter.Relay.Websocket
+    alias Stockfighter.Relay.API
 
-    Enum.each(state.conns, &Websocket.shutdown/1)
+    Enum.each(state.conns, &API.ws_shutdown/1)
   end
 
 end

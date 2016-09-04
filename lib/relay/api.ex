@@ -1,20 +1,18 @@
-alias Experimental.GenStage
+defmodule Stockfighter.Relay.API do
 
-defmodule Stockfighter.Relay.Websocket do
-  
-  def fmt_execs(account, venue) do
+  def ws_execs(account, venue) do
     "/ob/api/ws/#{account}/venues/#{venue}/executions"
   end
 
-  def fmt_ttape(account, venue) do
+  def ws_ttape(account, venue) do
     "/ob/api/ws/#{account}/venues/#{venue}/tickertape"
   end
 
-  @doc "Spawns a new process to read data from stockfighter websocket path"
-  @spec connect(binary, pid | atom) :: pid
-  def connect(path, stage) do
-    spawn_link(fn ->
 
+  @doc "Spawn a new process to read data from stockfighter websocket API"
+  @spec ws_connect(binary, pid | atom, (tuple -> :ok|:end)) :: pid
+  def ws_connect(path, receiver, talk) do
+    spawn_link(fn ->
       host    = Application.fetch_env!(:stockfighter, :api_host)
       port    = Application.fetch_env!(:stockfighter, :api_port)
       timeout = Application.fetch_env!(:stockfighter, :api_timeout_ms)
@@ -27,39 +25,37 @@ defmodule Stockfighter.Relay.Websocket do
 
       continue? = receive do
       {:gun_ws_upgrade, ^conn, :ok, _hdrs} ->
-        GenStage.cast(stage, {:connected, self})
-        :ok
+        talk.(receiver, {:connected, self})
       after timeout ->
-        GenStage.cast(stage, {:conn_error, "timeout"})
-        :end
+        talk.(receiver, {:conn_error, "timeout"})
       end
-      read_socket(conn, stage, continue?)
+      ws_read(conn, receiver, talk, continue?)
     end)
   end
 
-  def shutdown(conn) do
+  def ws_shutdown(conn) do
     send(conn, :shutdown)
   end
 
-  defp read_socket(_conn, _stage, :end), do: nil
-  defp read_socket( conn,  stage, _ok) do
+  defp ws_read(_conn, _rcv, _talk, :end), do: nil
+  defp ws_read( conn,  rcv,  talk, _ok) do
     continue? = receive do
-      :shutdown -> 
+      :shutdown ->
         :gun.shutdown(conn)
         :end
       {:gun_down, ^conn, _, _, _, _} ->
-        GenStage.cast(stage, {:reconnecting, self})
+        talk.(rcv, {:reconnecting, self})
       {:gun_ws, ^conn, :ping} -> 
         :gun.ws_send(conn, :pong)
       {:gun_ws, ^conn, {:ping, data}} ->
-        GenStage.cast(stage, {:ping_data, data})
+        talk.(rcv, {:ping_data, data})
         :gun.ws_send(conn, {:pong, data})
       {:gun_ws, ^conn, {mtype, data}} ->
-        GenStage.cast(stage, {:ws, mtype, data})
+        talk.(rcv, {:ws, mtype, data})
       msg ->
-        GenStage.cast(stage, {:unk_msg, msg})
+        talk.(rcv, {:unk_msg, msg})
     end
 
-    read_socket(conn, stage, continue?)
+    ws_read(conn, rcv, talk, continue?)
   end
 end
