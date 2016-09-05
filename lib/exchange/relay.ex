@@ -1,4 +1,4 @@
-defmodule Stockfighter.Relay.API do
+defmodule Stockfighter.Exchange.Relay do
   @moduledoc "Nuts and bolts of interacting with Stockfighter's API"
   use HTTPoison.Base
   alias HTTPoison.{Response, Error}
@@ -138,5 +138,4 @@ defmodule Stockfighter.Relay.API do
     
     {:error, code}
   end
-
 end

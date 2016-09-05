@@ -18,9 +18,8 @@ defmodule Stockfighter do
       # Define subordinates in startup order, eg:
         # worker(Stockfighter.Worker, [arg1, ..., argN]),
         # supervisor(Stockfighter.Sup, [arg1, ..., argN])
-      supervisor(Stockfighter.Relay.Host, []),
-
-      worker(Stockfighter.Relay, [])]
+      supervisor(Stockfighter.Exchange, [])
+    ]
 
     # Launch subordinate programs and get goin'!
     supervise subordinates, strategy: :rest_for_one
